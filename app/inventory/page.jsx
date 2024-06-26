@@ -1,6 +1,21 @@
+'use client'
 import React from 'react'
+import { useRouter } from 'next/navigation'
 
 const InventoryPage = () => {
+	const router = useRouter()
+	// validate session token
+	useEffect(() => {
+		(async () => {
+			const response = await fetch('/api/auth/validate');
+			const cookieValidationResult = await response.json()
+			if (!cookieValidationResult.success) {
+				console.log(cookieValidationResult.validation_error);
+				router.push('/login')
+			}
+		})()
+	}, [])
+
 	return (
 		<div className = 'min-w-screen min-h-screen flex flex-col items-center gap-10 px-32 py-10'>
 			{/* update form */}

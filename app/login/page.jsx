@@ -6,7 +6,10 @@ import { useRouter } from 'next/navigation'
 const LoginPage = () => {
     const router = useRouter()
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
 		const handleLogin = async () => {
+            setErrorMessage('')
 			const data = await fetch("/api/auth", {
                 method: "POST",
                 body: JSON.stringify({password})
@@ -14,9 +17,10 @@ const LoginPage = () => {
 
             const result = await data.json();
             if (result.success) {
-                router.push("/sales")
+                router.push("/")
             }else{
-                console.log(result.fetching_error);
+                // console.log(result.fetching_error);
+                setErrorMessage(result.fetching_error)
             }
 			
 		}
@@ -37,6 +41,7 @@ const LoginPage = () => {
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         className='text-black'/>
+                        {errorMessage ? <p>{errorMessage}</p> : null }
                     <button className="btn bg-green-400" onClick={handleLogin}>Login</button>
             </div>
         </div>
