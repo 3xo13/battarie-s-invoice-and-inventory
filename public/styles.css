@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.textInput {
+	@apply w-1/3 text-black px-3 py-2 rounded-sm
+}
+
+.btn {
+	@apply px-3 py-2 border rounded-sm
+}
