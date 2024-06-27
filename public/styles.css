@@ -3,9 +3,21 @@
 @tailwind utilities;
 
 .textInput {
-	@apply w-1/3 text-black px-3 py-2 rounded-sm
+	@apply w-1/3 text-black px-3 py-2
+}
+
+.companyTextInput {
+	@apply w-2/3 text-black px-3 py-2
 }
 
 .btn {
-	@apply px-3 py-2 border rounded-sm
+	@apply px-3 py-2 text-white bg-green-400
+}
+
+.formRow {
+	@apply flex flex-row flex-nowrap gap-5 border-b-2 border-gray-300 pb-2
+}
+
+.label {
+	@apply w-1/3
 }
