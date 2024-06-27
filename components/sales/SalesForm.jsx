@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import CarAndBattaryForm from './CarAndBattaryForm';
 import BattarysInfo from './BattarysInfo';
 
-const ProductAndPaymentForm = ({ products }) => {
+const SalesForm = ({ products }) => {
 	const [currentProduct, setCurrentProduct] = useState([])
 	const [paymentMethods, setPaymentMethods] = useState([])
 	const [currentProductName, setCurrentProductName] =  useState('')
@@ -26,6 +26,10 @@ const ProductAndPaymentForm = ({ products }) => {
 	const [vatNumber, setVatNumber] = useState('')
 	const [email, setEmail] = useState('')
 	const [phone, setPhone] = useState('')
+
+	// battary size
+	const [standardSize, setStandardSize] = useState("");
+	const [upgradeSize, setUpgradeSize] = useState("");
 
 	useEffect(() => {
 		if (products.length) {
@@ -180,8 +184,8 @@ const ProductAndPaymentForm = ({ products }) => {
 			</div> 
 			: null}
 		</form>
-		<CarAndBattaryForm />
-		<BattarysInfo />
+		<CarAndBattaryForm setStandardSize={setStandardSize} setUpgradeSize={setUpgradeSize}/>
+		<BattarysInfo standardSize={standardSize} upgradeSize={upgradeSize}/>
 		</div>
 			<div className='w-full p-5'>
 				<div className='w-full flex flex-col items-center'>
@@ -193,4 +197,4 @@ const ProductAndPaymentForm = ({ products }) => {
 	)
 }
 
-export default ProductAndPaymentForm
+export default SalesForm

@@ -10,7 +10,9 @@ const InventoryPage = () => {
     const [sheetHeaders, setSheetHeaders] = useState([]);
     const [products, setProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState([]);
+    const [currentProductName, setCurrentProductName] = useState("");
 	const [currentProductIndex, setCurrentProductIndex] = useState(1);
+    const existInInventory = currentProduct.length ? currentProduct[3] : ""
 
     const [quntity, setQuntity] = useState(0);
     const [cellRow, setCellRow] = useState(0);
@@ -36,6 +38,8 @@ const InventoryPage = () => {
             if (data.success && data.inventoryData.length > 1) {
                 setProducts(data.inventoryData.slice(1))
                 setCurrentProduct(data.inventoryData[1])
+                setCurrentProductName(data.inventoryData[1][0])
+                setCurrentProductIndex(1)
                 setSheetHeaders(data.inventoryData[0])
                 setCellRow(2)
                 return
@@ -43,6 +47,21 @@ const InventoryPage = () => {
             console.log("🚀 ~ error accured while fetching inventory data")
         })()
     }, [])
+
+    // set the current product based on current product name set by the user selection
+    useEffect(() => {
+        if (currentProductName && products.length) {
+            setCurrentProduct(...products.filter((prod, index) => {
+                if (prod[0] === currentProductName) {
+                    setCurrentProductIndex(index)
+                    // google sheet counts from 1 and the first cell is the headers
+                    setCellRow(index + 2)
+                    return prod
+                }
+                return null;
+            }))
+        }
+    },[currentProductName])
 
     // submit the change to the backend
     const handleSubmit = async (e) => {
@@ -77,6 +96,7 @@ const InventoryPage = () => {
 			if (data.success && data.inventoryData.length > 1) {
 				setProducts(data.inventoryData.slice(1))
 				setCurrentProduct(data.inventoryData[currentProductIndex + 1])
+                setCurrentProductName(data.inventoryData[currentProductIndex + 1][0])
 				setCellRow(currentProductIndex + 2)
 				return
 			}
@@ -88,12 +108,7 @@ const InventoryPage = () => {
             (prod, index) => <option
                 key={uuidv4()}
                 value={prod[0]}
-                onClick={e => {
-                    setCurrentProduct(prod)
-										setCurrentProductIndex(index)
-                    // google sheet counts from 1 and the first cell is the headers
-                    setCellRow(index + 2)
-                }}>{prod[0]}</option>
+                >{prod[0]}</option>
         )
         : []
 
@@ -106,14 +121,18 @@ const InventoryPage = () => {
                     {/* product name (select product)*/}
                     <div className='w-full flex flex-row justify-between'>
                         <label htmlFor="" className='w-1/2'>product name</label>
-                        <select name="product" id="product" className='w-1/2'>
+                        <select name="product" id="product" className='w-1/2'
+                        value={currentProductName}
+                            onChange={e => {
+                                setCurrentProductName(e.target.value)
+                            }}>
                             {productOptions}
                         </select>
                     </div>
                     {/* inventory quantity */}
                     <div className='w-full flex flex-row justify-between'>
                         <label htmlFor="" className='w-1/2'>Avaliable Qty</label>
-                        <p className="w-1/2">{currentProduct[3]}</p>
+                        <p className="w-1/2">{existInInventory}</p>
                     </div>
                     {/* new quantity */}
                     <div className='w-full flex flex-row justify-between'>

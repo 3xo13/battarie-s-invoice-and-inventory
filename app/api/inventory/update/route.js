@@ -6,10 +6,11 @@ import { sheets } from "@/app/_lip/sheetsapi/sheets";
 export async function POST(req) {
 	const request = await req.json()
 	const { cell, updateValue, oldValue } = request
-	console.log("🚀 ~ POST ~ cell, updateValue:", cell, updateValue)
-	const range = `products!${cell}`
+	// console.log("🚀 ~ POST ~ cell, updateValue:", cell, updateValue)
+	const range = `product!${cell}`
 	try {
 		const cellValue = +updateValue + +oldValue ;
+		console.log("🚀 ~ POST ~ cellValue:", cellValue)
 		// Update a cell value
 		sheets.spreadsheets.values.update({
 			spreadsheetId: process.env.INVENTORY_GOOGLE_SHEET_ID,
@@ -32,7 +33,7 @@ export async function POST(req) {
 		return NextResponse.json({ success: true })
 
 	} catch (error) {
-		console.log("🚀 ~ POST ~ error:", error)
+		// console.log("🚀 ~ POST ~ error:", error)
 		return NextResponse.json({ success: false, error: error.message })
 	}
 }
