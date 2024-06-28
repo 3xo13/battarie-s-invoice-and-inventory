@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import CarAndBattaryForm from './CarAndBattaryForm';
 import BattarysInfo from './BattarysInfo';
 import { getFormatedDate } from '@/javascript/getFormatedDate';
-import SaleConfermationMsg from './SaleConfirmationMsg';
 
 const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSelectedImage, selectedImage }) => {
 	const [currentProduct, setCurrentProduct] = useState([])

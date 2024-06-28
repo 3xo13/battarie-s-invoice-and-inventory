@@ -12,7 +12,8 @@ export async function POST(req) {
 		const cellValue = +updateValue + +oldValue ;
 		console.log("🚀 ~ POST ~ cellValue:", cellValue)
 		// Update a cell value
-		sheets.spreadsheets.values.update({
+
+		const requestParams = {
 			spreadsheetId: process.env.INVENTORY_GOOGLE_SHEET_ID,
 			range, // Specify the cell you want to update
 			valueInputOption: 'RAW', // Use 'RAW' for plain text values
@@ -20,17 +21,20 @@ export async function POST(req) {
 				values: [[`${cellValue}`]],
 			},
 			auth,
-		}, (err, response) => {
-			if (err) {
-				console.error('Error updating sheet:', err);
-				throw new Error("error while atempting to update sheet data")
-			} else {
-				console.log('Sheet updated successfully:', response.data);
-				return NextResponse.json({ success: true })
-			}
-		});
+		}
 
-		return NextResponse.json({ success: true })
+		const updatePromise = () => {
+			return new Promise((resolve, reject) => {
+				sheets.spreadsheets.values.update(requestParams, (err, response) => {
+					if (err) reject(err);
+					resolve(response.data);
+				});
+			});
+		};
+		const result = await updatePromise();
+
+		return NextResponse.json({ success: true, data: result })
+
 
 	} catch (error) {
 		// console.log("🚀 ~ POST ~ error:", error)

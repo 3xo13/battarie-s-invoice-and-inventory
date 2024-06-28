@@ -22,10 +22,21 @@ const SaleConfirmationMsg = ({saleData, setConfirm, selectedImage}) => {
 	const {brand, model, year} = carData
 
 
-	const handleConfirm = () => {
+	const handleConfirm = async () => {
 		const formData = new FormData();
 		formData.append('image', selectedImage);
 		formData.append("salesData", JSON.stringify(saleData))
+		try {
+			const response = await fetch("/api/sales/update", {
+				method: "POST",
+				body: formData
+			})
+			const result = await response.json()
+			console.log("🚀 ~ handleConfirm ~ result:", result)
+		} catch (error) {
+			console.log("🚀 ~ handleConfirm ~ error:", error)
+			
+		}
 	}
 	return (
 		<div className='w-[90%] h-screen flex flex-col items-center gap-5' >
@@ -66,7 +77,7 @@ const SaleConfirmationMsg = ({saleData, setConfirm, selectedImage}) => {
 				
 			</div>
 			<div className='flex flex-row gap-5 p-2'>
-				<button className='btn'>Confirm</button>
+				<button className='btn' onClick={handleConfirm}>Confirm</button>
 				<button className='btn' onClick={e => setConfirm(false)}>cancel</button>
 			</div>
 		</div>
