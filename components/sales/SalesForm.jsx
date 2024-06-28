@@ -99,6 +99,7 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 			mainPayment: productPrice,
 			MixPaymentMethod,
 			mixPayment,
+			cost: productCost,
 			oldBattary: isChecked ? "25" : "",
 			customerType,
 			companyData: companyDataObject,

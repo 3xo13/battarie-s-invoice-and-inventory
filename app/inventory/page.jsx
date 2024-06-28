@@ -90,7 +90,7 @@ const InventoryPage = () => {
 		// refetch the inventory data after an update
 		const updatePage = async () => {
 			setQuntity(0)
-			const response = await fetch("/api/inventory/get")
+            const response = await fetch("/api/inventory/get", { cache: 'no-store' })
 			const data = await response.json()
 			// check if the data sheet is not empty (first value are the table headers)
 			if (data.success && data.inventoryData.length > 1) {

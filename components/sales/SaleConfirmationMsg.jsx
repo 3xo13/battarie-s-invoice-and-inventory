@@ -32,7 +32,10 @@ const SaleConfirmationMsg = ({saleData, setConfirm, selectedImage}) => {
 				body: formData
 			})
 			const result = await response.json()
-			console.log("🚀 ~ handleConfirm ~ result:", result)
+			//app/api/telegram/get
+			// const response = await fetch("/api/telegram/get")
+			// // const result = await response.json()
+			// console.log("🚀 ~ handleConfirm ~ result:", response)
 		} catch (error) {
 			console.log("🚀 ~ handleConfirm ~ error:", error)
 			
