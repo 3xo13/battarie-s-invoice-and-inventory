@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {v4 as uuidv4} from 'uuid';
-import {letters} from '@/exports/letters';
+import {letters} from '@/javascript/letters';
 
 const InventoryPage = () => {
     const router = useRouter()

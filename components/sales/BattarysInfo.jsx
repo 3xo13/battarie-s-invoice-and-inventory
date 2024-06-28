@@ -22,12 +22,7 @@ const BattarysInfo = ({standardSize, upgradeSize}) => {
                     <input type="text" className='w-full'/> */}
                 </div>
             </div>
-            <div className='formRow' style={{border: "none"}}>
-                <label htmlFor="oldBattery" className='w-1/3'>Old Battary</label>
-                <div className='w-1/3'>
-                    <input type="checkbox" className=''/>
-                </div>
-            </div>
+            
         </div>
     )
 }

@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react'
 import {v4 as uuidv4} from 'uuid';
 
-const CarAndBattaryForm = ({ setStandardSize, setUpgradeSize }) => {
+const CarAndBattaryForm = ({ setCarData }) => {
     const [allCarsData, setAllCarsData] = useState([]);
     const [carBrands, setCarBrands] = useState([]);
     const [currentBrand, setCurrentBrand] = useState('');
@@ -10,6 +10,10 @@ const CarAndBattaryForm = ({ setStandardSize, setUpgradeSize }) => {
     const [currentModel, setCurrentModel] = useState("");
 		const [modelYears, setModelYears] = useState([]);
 		const [currentYear, setcurrentYear] = useState("");
+
+	// battary size
+	const [standardSize, setStandardSize] = useState("");
+	const [upgradeSize, setUpgradeSize] = useState("");
 
     // get cars and battaries info
     useEffect(() => {
@@ -31,6 +35,7 @@ const CarAndBattaryForm = ({ setStandardSize, setUpgradeSize }) => {
         })()
     }, [])
 
+		// filter brand models and set current data
     useEffect(() => {
         if (currentBrand && allCarsData.length) {
 					const filteredModels = allCarsData.filter(carData => carData[0] === currentBrand)
@@ -41,12 +46,14 @@ const CarAndBattaryForm = ({ setStandardSize, setUpgradeSize }) => {
         }
     }, [currentBrand])
 
+		// get the years from the current model
 	useEffect(() => {
 		if (currentModel.length) {
 			const modelData = JSON.parse(currentModel)
 			const yearsRange = modelData[2].split("~")
 			const start = yearsRange[0]
 			const end = yearsRange[1]
+			// if there's no end date the second value in the range is empty str
 			if(end === ""){
 				setModelYears([yearsRange[0]])
 				setcurrentYear(yearsRange[0])
@@ -58,19 +65,29 @@ const CarAndBattaryForm = ({ setStandardSize, setUpgradeSize }) => {
 				setModelYears(years)
 				setcurrentYear(years[0])
 			}
-			
-			// setModelYears
 		}
 	}, [currentModel])
 
+	// send the car and battary data to the parent component
+	useEffect(() => {
+		if (currentModel) {
+			setCarData({
+				brand: currentBrand, model: JSON.parse(currentModel)[1], year: currentYear, standardSize, upgradeSize
+			})
+		}
+	},[currentBrand, currentModel, currentYear, standardSize, upgradeSize])
+
+	// return element list (options) from car brands
     const carBrandsOptions = carBrands.map(
         brand => <option key={uuidv4()} value={brand}>{brand}</option>
     )
 
+	// return element list (options) from current model
     const currentModelsOptions = currentBrandModels.map(
         model => <option key={uuidv4()} value={JSON.stringify(model)}>{ `${model[1]} (${model[2]})`}</option>
     )
 
+	// return element list (options) from years
 	const yearsOptions = modelYears.map(
 		year => <option key={uuidv4()} value={year}>{year}</option>
 	)
@@ -84,7 +101,7 @@ const CarAndBattaryForm = ({ setStandardSize, setUpgradeSize }) => {
                 <select
                     name="CarBrand"
                     id="CarBrand"
-                    className='border rounded-sm px-3 py-2 w-1/3'
+                    className='select'
                     value={currentBrand}
                     onChange={e => setCurrentBrand(e.target.value)}>
                     {carBrandsOptions}
@@ -97,7 +114,7 @@ const CarAndBattaryForm = ({ setStandardSize, setUpgradeSize }) => {
                 <select
                     name="CarModel"
                     id="CarModel"
-                    className='border rounded-sm px-3 py-2 w-1/3'
+                    className='select'
                     value={currentModel}
                     onChange={e => {
 											const modelArray = JSON.parse(e.target.value)
@@ -118,7 +135,7 @@ const CarAndBattaryForm = ({ setStandardSize, setUpgradeSize }) => {
                 <select
                     name="year"
                     id="year"
-                    className='border rounded-sm px-3 py-2 w-1/3'
+                    className='select'
                     value={currentYear}
                     onChange={e => setcurrentYear(e.target.value)}>
 										{yearsOptions}

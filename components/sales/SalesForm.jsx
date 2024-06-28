@@ -3,13 +3,16 @@ import React, { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid';
 import CarAndBattaryForm from './CarAndBattaryForm';
 import BattarysInfo from './BattarysInfo';
+import { getFormatedDate } from '@/javascript/getFormatedDate';
+import SaleConfermationMsg from './SaleConfirmationMsg';
 
-const SalesForm = ({ products }) => {
+const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSelectedImage, selectedImage }) => {
 	const [currentProduct, setCurrentProduct] = useState([])
 	const [paymentMethods, setPaymentMethods] = useState([])
-	const [currentProductName, setCurrentProductName] =  useState('')
 	const [productCost, setProductCost] = useState(0)
 	const [productPrice, setProductPrice] = useState(0)
+	const [currentProductName, setCurrentProductName] =  useState('')
+	
 
 	// product data
 	const [price, setPrice] = useState(productPrice)
@@ -26,17 +29,25 @@ const SalesForm = ({ products }) => {
 	const [vatNumber, setVatNumber] = useState('')
 	const [email, setEmail] = useState('')
 	const [phone, setPhone] = useState('')
+	
+	
+	// car data
+	const [carData, setCarData] = useState({})
+	const [isChecked, setIsChecked] = useState(false);
 
-	// battary size
-	const [standardSize, setStandardSize] = useState("");
-	const [upgradeSize, setUpgradeSize] = useState("");
+	// other states
+	const [errMsg, setErrMsg] = useState("");
 
+
+	// set current product when the products data is recived
 	useEffect(() => {
 		if (products.length) {
 			setCurrentProduct(products[0])
+			setPrice(products[0][1])
 		}
 	}, [products])
 
+	// set current product's name, cost and price
 	useEffect(() => {
 		if (currentProduct.length) {
 			setCurrentProductName(currentProduct[0])
@@ -45,6 +56,7 @@ const SalesForm = ({ products }) => {
 		}
 	}, [currentProduct])
 
+	// get payment options
 	useEffect(() => {
 		(async () => {
 			const response = await fetch("/api/payment/get")
@@ -54,6 +66,52 @@ const SalesForm = ({ products }) => {
 			}
 		})()
 	}, [])
+
+	const handleImageChange = (e) => {
+		const file = e.target.files[0];
+		setSelectedImage(file);
+	};
+
+	// procces data and submit the form
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		if (!selectedImage) {
+			setErrMsg("you must upload an image of the transaction")
+			return;
+		}
+		const formattedDate = getFormatedDate()
+
+		const companyDataObject = {
+			name,
+			address,
+			zipCode,
+			vatNumber,
+			email,
+			phone
+		}
+		
+		const saleData = {
+			product: currentProductName,
+			fee,
+			price: productPrice,
+			date: formattedDate,
+			inventory: currentProduct[3],
+			mainPaymentMethod,
+			mainPayment: productPrice,
+			MixPaymentMethod,
+			mixPayment,
+			oldBattary: isChecked ? "25" : "",
+			customerType,
+			companyData: companyDataObject,
+			carData
+		}
+	
+		setConfirmingSaleData(saleData)
+		setConfirmingSale(true)
+		
+		
+	}
+
 
 	const productOptions = products.length
 		? products.map(prod => <option key={uuidv4()} defaultValue={prod[0]}>{prod[0]}</option>
@@ -73,8 +131,10 @@ const SalesForm = ({ products }) => {
 		)
 		: []
 
+
 	return (
 		<div className='w-full flex flex-col items-center justify-center'>
+			{/* {confermingSale && selectedImage ? <SaleConfermationMsg saleData={confermingSaleData} imgUrl={URL.createObjectURL(selectedImage)} setConferm={setConfirmingSale} /> : null} */}
 			<div className='w-full border-2 border-gray-300 rounded-sm p-5 flex flex-col gap-5'>
 		<form className='flex flex-col w-full gap-5'>
 			{/* product name (product select) */}
@@ -83,16 +143,20 @@ const SalesForm = ({ products }) => {
 				<select
 					name="ProductName"
 					id="ProductName"
-					className=' border rounded-sm px-3 py-2 w-1/3'
+					className='select'
 					value={currentProductName}
-							onChange={e => setCurrentProduct(...products.filter(prod => prod[0] == e.target.value))}>
+					// hande change of the product name (set current product and price)
+							onChange={e => {
+								const filteredProduct = products.filter(prod => prod[0] == e.target.value)
+								setPrice(filteredProduct[0][1])
+								return setCurrentProduct(...filteredProduct)}}>
 					{productOptions}
 				</select>
 				<div className='w-1/3'></div>
 			</div>
 			{/* product price and cost (product price select) */}
 			<div className='formRow'>
-				<label className='w-1/3' htmlFor="price">{`Price (${productPrice})`}</label>
+				<label className='w-1/3' htmlFor="price">{`Price (${price})`}</label>
 				<input className='textInput' type="number" id='price' 
 							value={+productPrice} min={0} onChange={e => setProductPrice(e.target.value)}/>
 				<p className='w-1/3'>{productCost}</p>
@@ -104,7 +168,7 @@ const SalesForm = ({ products }) => {
 				<select
 					name="ProductName"
 					id="ProductName"
-					className=' border rounded-sm px-3 py-2 w-1/3'
+					className='select'
 					value={mainPaymentMethod}
 					onChange={e => setMainPaymentMethod(e.target.value)}>
 					{mainPaymentMethodOptions}
@@ -121,12 +185,17 @@ const SalesForm = ({ products }) => {
 				<select
 					name="ProductName"
 					id="ProductName"
-					className=' border rounded-sm px-3 py-2 w-1/3'
+					className='select'
 					value={MixPaymentMethod}
 					onChange={e => setMixPaymentMethod(e.target.value)}>
 					{mixPaymentMethodOptions}
 				</select>
 			</div>
+			{/* image */}
+				<div className='formRow'>
+					<label htmlFor="image" className='w-1/3'>Upload an Image</label>
+						<input type="file" onChange={handleImageChange} className='textInput' accept="image/png, image/gif, image/jpeg" required={true}/>
+				</div>
 			{/* customer type (personal or company) */}
 					<div className='formRow' style={{ border: customerType === "personal" ? "none" : "" }}>
 				<label className='w-1/3' htmlFor="CustomerType">Customer Type</label>
@@ -184,12 +253,24 @@ const SalesForm = ({ products }) => {
 			</div> 
 			: null}
 		</form>
-		<CarAndBattaryForm setStandardSize={setStandardSize} setUpgradeSize={setUpgradeSize}/>
-		<BattarysInfo standardSize={standardSize} upgradeSize={upgradeSize}/>
+		<CarAndBattaryForm setCarData={setCarData}/>
+		<BattarysInfo standardSize={carData.standardSize} upgradeSize={carData.upgradeSize}/>
+				<div className='formRow' style={{ border: "none" }}>
+					<label htmlFor="oldBattery" className='w-1/3'>Old Battary</label>
+					<div className='w-1/3'>
+						<input
+							type="checkbox"
+							checked={isChecked}
+							onChange={() => setIsChecked(!isChecked)}
+						/>
+
+					</div>
+				</div>
 		</div>
+			
 			<div className='w-full p-5'>
 				<div className='w-full flex flex-col items-center'>
-					<button className='btn w-1/2 bg-green-400'>Submit</button>
+					<button className='btn w-1/2 bg-green-400' onClick={handleSubmit}>Submit</button>
 				</div>
 			</div>
 		</div>
