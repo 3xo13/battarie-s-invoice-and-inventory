@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {v4 as uuidv4} from 'uuid';
 import {letters} from '@/javascript/letters';
+import Header from '@/components/header/Header';
 
 const InventoryPage = () => {
     const router = useRouter()
@@ -115,6 +116,7 @@ const InventoryPage = () => {
     return (
         <div
             className='min-w-screen min-h-screen flex flex-col items-center gap-10 px-32 py-10'>
+            <Header title={"Inventory"} link={"/"} otherPageTitle={"Sales Data & History"}/>
             {/* update form */}
             <div className='w-full border rounded-sm p-5'>
                 <form className='w-full flex flex-col gap-3'>

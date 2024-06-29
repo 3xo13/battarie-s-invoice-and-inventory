@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(){
 	try {
-		const inventoryData = await getInventorySheetData('product history')
+		const historyData = await getInventorySheetData('product history')
 
-		return NextResponse.json({success: true, inventoryData})
+		return NextResponse.json({success: true, historyData})
 		
 	} catch (error) {
 		return NextResponse.json({success: false, error: error.message})

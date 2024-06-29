@@ -1,7 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 
-const SaleConfirmationMsg = ({saleData, setConfirm, selectedImage}) => {
+const SaleConfirmationMsg = ({saleData, setConfirm, selectedImage, setBonus}) => {
 	// console.log("🚀 ~ SaleConfermationMsg ~ saleData:", saleData)
 	const {
 		product,
@@ -32,13 +32,12 @@ const SaleConfirmationMsg = ({saleData, setConfirm, selectedImage}) => {
 				body: formData
 			})
 			const result = await response.json()
-			//app/api/telegram/get
-			// const response = await fetch("/api/telegram/get")
-			// // const result = await response.json()
-			// console.log("🚀 ~ handleConfirm ~ result:", response)
+			if (result.success) {
+				// todo: show success message
+				setBonus(result.bonusAmount)
+			}
 		} catch (error) {
 			console.log("🚀 ~ handleConfirm ~ error:", error)
-			
 		}
 	}
 	return (

@@ -1,40 +1,13 @@
-import {getInventorySheetData} from "@/app/_lip/readInventorySheet";
 import {auth} from "@/app/_lip/sheetsapi/auth";
 import {NextResponse} from "next/server";
 import {sheets} from "@/app/_lip/sheetsapi/sheets";
-import {uploadImagesToTelegram} from "@/app/_lip/telegram/uploadImage";
-import get_bonus from "@/javascript/get_bonus";
+import { getFormatedDate } from "@/javascript/getFormatedDate";
 
 export async function POST(req) {
-    // request is a form data object
-    const request = await req.formData()
-    // transaction image
-    const image = await request.get("image")
-    // all the other form data
-    const salesData = await JSON.parse(request.get("salesData"))
-    // destructuring the data
-    const {
-        product,
-        fee,
-        price,
-        date,
-        inventory,
-        mainPaymentMethod,
-        mainPayment,
-        MixPaymentMethod,
-        mixPayment,
-        cost,
-        oldBattary,
-        carData
-    } = salesData
-    const {brand, model, year} = carData
-
+    const request = await req.json()
+		const {deductAmount} = await request
+		const date = getFormatedDate()
     try {
-        // uploading the image to telegram first and getting the link
-        const uploadImageResult = await uploadImagesToTelegram(image)
-        if (!uploadImageResult) {
-            throw new Error("error uploading the image")
-        }
         const spreadsheetId = process.env.PRODUCT_HISTORY_GOOGLE_SHEET_ID;
         const range = 'product history';
         // get all the sheet data
@@ -50,37 +23,36 @@ export async function POST(req) {
         // the last row data to be used along with the new data
         const lastRow = values[numRows - 1]
 
-        // calculate profit, sale total and bonus
-        const profit = (+price + +fee) - +cost;
-        const total = +price + +fee;
-        const bonus = get_bonus(profit)
+			if (+lastRow[12] < deductAmount) {
+					throw new Error("Invalid bonus amount")
+				}
 
         // specify the range of where the new data is going to written (after last row)
         const saleRange = `product history!A${numRows + 1}:U${numRows + 1}`;
 
         // all the data orgenized in the order accuring in the sheet
         const sheetRowData = [
-            product,
-            `${fee}`,
-            price,
+            "Deduct Bonus",
+            "",
+            "",
             date,
-            inventory,
-            mainPaymentMethod,
-            mainPayment,
-            MixPaymentMethod,
-            `${mixPayment}`,
-            `${total}`, // sale total
-            cost, // product cost
-            `${profit.toFixed(2)}`, // sale profit
-            `${ (+lastRow[12] + bonus).toFixed(2)}`, // bonus history
-            `${ (+lastRow[13] + profit).toFixed(2)}`, // cash history
-            `${bonus}`,
-            `${ (profit - bonus).toFixed(2)}`, // net profit
-            oldBattary,
-            brand,
-            model,
-            year,
-            uploadImageResult
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            `${ (+lastRow[12] - deductAmount).toFixed(2)}`, // bonus history
+            `${ (+lastRow[13] - deductAmount).toFixed(2)}`, // cash history
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
         ]
 
         // google sheet api request parameters
@@ -113,8 +85,7 @@ export async function POST(req) {
         // return success and the data
         return NextResponse.json({
             success: true,
-            data: sheetRowData.slice(1, sheetRowData.length - 1),
-            bonusAmount: bonus
+            data: sheetRowData
         })
     } catch (error) {
         console.log("🚀 ~ POST ~ error:", error)
