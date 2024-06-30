@@ -3,6 +3,7 @@ const uploadImagesToTelegram = async (file) => {
 	try {
 		const response = await fetch(`https://api.telegram.org/bot${botToken}/getUpdates`)
 		const getIdResult = await response.json()
+		console.log("🚀 ~ uploadImagesToTelegram ~ getIdResult:", getIdResult)
 		if (getIdResult.ok) {
 			const id = getIdResult.result[0].message.chat.id;
 

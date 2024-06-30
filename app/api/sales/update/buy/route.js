@@ -5,8 +5,7 @@ import { getFormatedDate } from "@/javascript/getFormatedDate";
 
 export async function POST(req) {
 	const request = await req.json()
-	const { product: jsonProduct } = await request
-	const product = JSON.parse(jsonProduct)
+	const { product } = await request
 	const date = getFormatedDate()
 	try {
 		const spreadsheetId = process.env.PRODUCT_HISTORY_GOOGLE_SHEET_ID;

@@ -4,10 +4,14 @@ import { v4 as uuidv4 } from 'uuid';
 import CarAndBattaryForm from './CarAndBattaryForm';
 import BattarysInfo from './BattarysInfo';
 import { getFormatedDate } from '@/javascript/getFormatedDate';
+import SearchableSelect from '../general/SearchableSelect';
+// import GetStrOptions from '../general/SelectStr';
+import SelectStr from '../general/SelectStr';
 
 const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSelectedImage, selectedImage }) => {
 	const [currentProduct, setCurrentProduct] = useState([])
 	const [paymentMethods, setPaymentMethods] = useState([])
+	const [mixpaymentMethods, setMixpaymentMethods] = useState([])
 	const [productCost, setProductCost] = useState(0)
 	const [productPrice, setProductPrice] = useState(0)
 	const [currentProductName, setCurrentProductName] =  useState('')
@@ -17,8 +21,8 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 	const [price, setPrice] = useState(productPrice)
 	const [fee, setFee] = useState(60)
 	const [mixPayment, setMixPayment] = useState(0)
-	const [mainPaymentMethod, setMainPaymentMethod] = useState('Cash')
-	const [MixPaymentMethod, setMixPaymentMethod] = useState('Cash')
+	const [mainPaymentMethod, setMainPaymentMethod] = useState('')
+	const [MixPaymentMethod, setMixPaymentMethod] = useState('')
 	const [customerType, setCustomerType] = useState('personal')
 
 	//company data
@@ -36,7 +40,6 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 
 	// other states
 	const [errMsg, setErrMsg] = useState("");
-
 
 	// set current product when the products data is recived
 	useEffect(() => {
@@ -61,10 +64,25 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 			const response = await fetch("/api/payment/get")
 			const paymentData = await response.json()
 			if (paymentData.success) {
-				setPaymentMethods(paymentData.paymentMethods.slice(1))
+				const paymentOptions = paymentData.paymentMethods.slice(1)
+				const filteredPaymentOptions = paymentOptions.filter(item => item !== paymentOptions[0])
+				setPaymentMethods(paymentOptions)
+				setMixpaymentMethods(filteredPaymentOptions)
+				setMainPaymentMethod(paymentMethods[0])
+				setMixPaymentMethod(filteredPaymentOptions[0])
 			}
 		})()
 	}, [])
+
+	// filter the list of the mix payment methods to exclude the main payment method option
+	// every time the main paymant method is changed
+	useEffect(()=>{
+		if (paymentMethods.length && mainPaymentMethod) {
+			const filteredPaymentOptions = paymentMethods.filter(item => item != mainPaymentMethod)
+			setMixpaymentMethods(filteredPaymentOptions)
+			setMixPaymentMethod(filteredPaymentOptions[0])
+		}
+	},[mainPaymentMethod])
 
 	const handleImageChange = (e) => {
 		const file = e.target.files[0];
@@ -108,71 +126,39 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 	
 		setConfirmingSaleData(saleData)
 		setConfirmingSale(true)
-		
-		
 	}
-
-
-	const productOptions = products.length
-		? products.map(prod => <option key={uuidv4()} defaultValue={prod[0]}>{prod[0]}</option>
-		)
-		: []
-
-
-	const mainPaymentMethodOptions = paymentMethods.length
-		? paymentMethods.map(
-			payment => <option key={uuidv4()} value={payment}>{payment}</option>
-		)
-		: []
-
-	const mixPaymentMethodOptions = paymentMethods.length
-		? paymentMethods.map(
-			payment => <option key={uuidv4()} value={payment}>{payment}</option>
-		)
-		: []
-
 
 	return (
 		<div className='w-full flex flex-col items-center justify-center'>
-			{/* {confermingSale && selectedImage ? <SaleConfermationMsg saleData={confermingSaleData} imgUrl={URL.createObjectURL(selectedImage)} setConferm={setConfirmingSale} /> : null} */}
 			<div className='w-full border-2 border-gray-300 rounded-sm p-5 flex flex-col gap-5'>
 		<form className='flex flex-col w-full gap-5'>
 			{/* product name (product select) */}
 			<div className='formRow'>
 				<label className='w-1/3' htmlFor="ProductName">Product Name</label>
-				<select
-					name="ProductName"
-					id="ProductName"
-					className='select'
-					value={currentProductName}
-					// hande change of the product name (set current product and price)
-							onChange={e => {
-								const filteredProduct = products.filter(prod => prod[0] == e.target.value)
-								setPrice(filteredProduct[0][1])
-								return setCurrentProduct(...filteredProduct)}}>
-					{productOptions}
-				</select>
+					<SearchableSelect 
+					orgignalList={products} 
+					currentProduct={currentProduct} 
+					setCurrentProduct={setCurrentProduct}
+					/>
 				<div className='w-1/3'></div>
 			</div>
 			{/* product price and cost (product price select) */}
 			<div className='formRow'>
 				<label className='w-1/3' htmlFor="price">{`Price (${price})`}</label>
-				<input className='textInput' type="number" id='price' 
-							value={+productPrice} min={0} onChange={e => setProductPrice(e.target.value)}/>
+				<input 
+				className='textInput' 
+				type="number" 
+				id='price' 
+				min={0} 
+				value={+productPrice} 
+				onChange={e => setProductPrice(e.target.value)}/>
 				<p className='w-1/3'>{productCost}</p>
 			</div>
 			{/* fee (addetional charges) */}
 			<div className='formRow'>
 				<label className='w-1/3' htmlFor="Fee">Fee (60)</label>
 				<input className='textInput' type="number" id='fee' defaultValue={fee} min={0} onChange={e => setMixPayment(e.target.value)} />
-				<select
-					name="ProductName"
-					id="ProductName"
-					className='select'
-					value={mainPaymentMethod}
-					onChange={e => setMainPaymentMethod(e.target.value)}>
-					{mainPaymentMethodOptions}
-				</select>
+				<SelectStr arrayOfOptions={paymentMethods} selectState={mainPaymentMethod} setSelectSatae={setMainPaymentMethod}/>
 			</div>
 			{/* mix payment (secondary payment option) */}
 			<div className='formRow'>
@@ -182,14 +168,9 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 				defaultValue={mixPayment} 
 				min={0} 
 				onChange={e => setMixPayment(e.target.value)} />
-				<select
-					name="ProductName"
-					id="ProductName"
-					className='select'
-					value={MixPaymentMethod}
-					onChange={e => setMixPaymentMethod(e.target.value)}>
-					{mixPaymentMethodOptions}
-				</select>
+				<SelectStr arrayOfOptions={mixpaymentMethods} 
+				selectState={MixPaymentMethod} 
+				setSelectSatae={setMixPaymentMethod}/>
 			</div>
 			{/* image */}
 				<div className='formRow'>
@@ -279,3 +260,4 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 }
 
 export default SalesForm
+

@@ -1,6 +1,7 @@
 "use client"
 import React, {useEffect, useState} from 'react'
 import {v4 as uuidv4} from 'uuid';
+import SearchableSelect from '../general/SearchableSelect';
 
 export const InventoryOptions = ({products, bonus}) => {
     const [historyData, setHistoryData] = useState([]);
@@ -11,9 +12,9 @@ export const InventoryOptions = ({products, bonus}) => {
         bonusHistory = historyData[12]
     }
 
-    const [currentProduct, setCurrentProduct] = useState("");
+    const [currentProduct, setCurrentProduct] = useState([]);
     const price = currentProduct
-        ? JSON.parse(currentProduct)[2]
+        ? currentProduct[2]
         : 0
 
         // form data
@@ -36,7 +37,7 @@ export const InventoryOptions = ({products, bonus}) => {
 
     useEffect(() => {
         if (products.length) {
-            setCurrentProduct(JSON.stringify(products[0]))
+            setCurrentProduct(products[0])
         }
     }, [products])
 
@@ -100,11 +101,11 @@ export const InventoryOptions = ({products, bonus}) => {
         }
     }
 
-    const productOptions = products.length
-        ? products.map(
-            prod => <option key={uuidv4()} value={JSON.stringify(prod)}>{prod[0]}</option>
-        )
-        : []
+    // const productOptions = products.length
+    //     ? products.map(
+    //         prod => <option key={uuidv4()} value={JSON.stringify(prod)}>{prod[0]}</option>
+    //     )
+    //     : []
 
     return (
         <div className='w-full border rounded-sm p-5 flex flex-col gap-5'>
@@ -139,14 +140,15 @@ export const InventoryOptions = ({products, bonus}) => {
             </div>
             {/* battary buy */}
             <div className='flex flex-col gap-3 border-t pt-3'>
-                <select
+                <SearchableSelect orgignalList={products} currentProduct={currentProduct} setCurrentProduct={setCurrentProduct}/>
+                {/* <select
                     name="battaryName"
                     id="battaryName"
                     className='textInput'
                     value={currentProduct}
                     onChange={e => setCurrentProduct(e.target.value)}>
                     {productOptions}
-                </select>
+                </select> */}
                 <p className='textInput'>{price}</p>
                 <button className='btn bg-green-400 w-fit' onClick={handleProductBuying}>Buy</button>
             </div>

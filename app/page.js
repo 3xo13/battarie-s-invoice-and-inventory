@@ -45,6 +45,18 @@ const SalesPage = () => {
         })()
     }, [])
 
+    const generatePdf = async () => {
+        try {
+            
+            const response = await fetch("/api/pdf/get",{method: "POST"})
+            const file = await response.json()
+            console.log("🚀 ~ generatePdf ~ file:", file)
+        } catch (error) {
+            console.log("🚀 ~ generatePdf ~ error:", error)
+            
+        }
+    }
+
     // render sale confermation message
     if (selectedImage && confirmingSale) {
         return (
@@ -71,7 +83,7 @@ const SalesPage = () => {
                 selectedImage={selectedImage}/>
 
             <InventoryOptions products={products.slice(1)} bonus={bonus}/>
-
+            <button onClick={generatePdf}>pdf</button>
         </div>
     )
 }

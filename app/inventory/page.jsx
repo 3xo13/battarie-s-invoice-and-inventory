@@ -128,6 +128,8 @@ const InventoryPage = () => {
                             onChange={e => {
                                 setCurrentProductName(e.target.value)
                             }}>
+                                
+                                
                             {productOptions}
                         </select>
                     </div>
