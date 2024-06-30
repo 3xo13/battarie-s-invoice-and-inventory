@@ -1,5 +1,4 @@
-const uploadImagesToTelegram = async (file) => {
-	const botToken = process.env.TELEGRAM_BOT_TOKEN
+const uploadImagesToTelegram = async (file, botToken) => {
 	try {
 		const response = await fetch(`https://api.telegram.org/bot${botToken}/getUpdates`)
 		const getIdResult = await response.json()

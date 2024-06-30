@@ -39,7 +39,7 @@ const LoginPage = () => {
                     <input
                         type="text"
                         value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        onChange={e => setPassword(e.target.value.trim())}
                         className='text-black'/>
                         {errorMessage ? <p>{errorMessage}</p> : null }
                     <button className="btn bg-green-400" onClick={handleLogin}>Login</button>

@@ -2,13 +2,19 @@ import { auth } from "@/app/_lip/sheetsapi/auth";
 import { NextResponse } from "next/server";
 import { sheets } from "@/app/_lip/sheetsapi/sheets";
 import { getFormatedDate } from "@/javascript/getFormatedDate";
+import { cookies } from "next/headers";
+import getSheetId from "@/app/_lip/getSheetId";
 
 export async function POST(req) {
+	const cookieStore = cookies();
+	const token = cookieStore.get('accessToken')
+
 	const request = await req.json()
 	const { depositeAmount } = await request
 	const date = getFormatedDate()
 	try {
-		const spreadsheetId = process.env.PRODUCT_HISTORY_GOOGLE_SHEET_ID;
+		const spreadsheetId = await getSheetId(token)
+
 		const range = 'product history';
 		// get all the sheet data
 		const response = await sheets

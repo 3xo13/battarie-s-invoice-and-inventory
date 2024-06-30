@@ -4,8 +4,15 @@ import {NextResponse} from "next/server";
 import {sheets} from "@/app/_lip/sheetsapi/sheets";
 import {uploadImagesToTelegram} from "@/app/_lip/telegram/uploadImage";
 import get_bonus from "@/javascript/get_bonus";
+import { cookies } from "next/headers";
+import getSheetId from "@/app/_lip/getSheetId";
+import getBotToken from "@/app/_lip/getBotToken";
+
 
 export async function POST(req) {
+    const cookieStore = cookies();
+    const token = cookieStore.get('accessToken')
+
     // request is a form data object
     const request = await req.formData()
     // transaction image
@@ -30,12 +37,13 @@ export async function POST(req) {
     const {brand, model, year} = carData
 
     try {
+        const spreadsheetId = await getSheetId(token)
+        const botToken = await getBotToken(token)
         // uploading the image to telegram first and getting the link
-        const uploadImageResult = await uploadImagesToTelegram(image)
+        const uploadImageResult = await uploadImagesToTelegram(image, botToken)
         if (!uploadImageResult) {
             throw new Error("error uploading the image")
         }
-        const spreadsheetId = process.env.PRODUCT_HISTORY_GOOGLE_SHEET_ID;
         const range = 'product history';
         // get all the sheet data
         const response = await sheets

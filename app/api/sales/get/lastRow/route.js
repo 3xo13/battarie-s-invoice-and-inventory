@@ -1,9 +1,16 @@
 import { getInventorySheetData } from "@/app/_lip/readInventorySheet";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import getSheetId from "@/app/_lip/getSheetId";
 
 export async function GET() {
+	const cookieStore = cookies();
+	const token = cookieStore.get('accessToken')
+
 	try {
-		const historyData = await getInventorySheetData('product history')
+		const spreadsheetId = await getSheetId(token)
+
+		const historyData = await getInventorySheetData('product history', spreadsheetId)
 
 		// the number of rows
 		const numRows = historyData.length;

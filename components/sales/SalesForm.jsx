@@ -41,6 +41,7 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 
 	// other states
 	const [errMsg, setErrMsg] = useState("");
+	const [open, setOpen] = useState(false)
 
 	// set current product when the products data is recived
 	useEffect(() => {
@@ -130,7 +131,7 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 	}
 
 	return (
-		<div className='w-full flex flex-col items-center justify-center'>
+		<div className='w-full flex flex-col items-center justify-center' onClick={e => setOpen(!open)}>
 			<div className='w-full border-2 border-gray-300 rounded-sm p-5 flex flex-col gap-5'>
 		<form className='flex flex-col w-full gap-5'>
 			{/* product name (product select) */}
@@ -138,8 +139,9 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 				<label className='w-1/3' htmlFor="ProductName">Product Name</label>
 					<SearchableSelect 
 					orgignalList={products} 
-					currentProduct={currentProduct} 
-					setCurrentProduct={setCurrentProduct}
+					currentItem={currentProduct} 
+					setCurrentItem={setCurrentProduct}
+					open={open}
 					/>
 				<div className='w-1/3'></div>
 			</div>

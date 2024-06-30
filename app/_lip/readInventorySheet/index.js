@@ -2,12 +2,12 @@ import { google } from "googleapis";
 import { auth } from "../sheetsapi/auth";
 import { sheets } from "../sheetsapi/sheets";
 
-export const getInventorySheetData = async (sheetName) => {
+export const getInventorySheetData = async (sheetName, spreadsheetId) => {
 	const range = `${sheetName}!A:Z`
 
 	try {
 		const response = await sheets.spreadsheets.values.get({
-			spreadsheetId: process.env.INVENTORY_GOOGLE_SHEET_ID,
+			spreadsheetId,
 			range
 		})
 		return response.data.values

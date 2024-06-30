@@ -1,13 +1,20 @@
 import { getInventorySheetData } from "@/app/_lip/readInventorySheet";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import getSheetId from "@/app/_lip/getSheetId";
 
-export async function GET(){
+export async function GET() {
+	const cookieStore = cookies();
+	const token = cookieStore.get('accessToken')
+
 	try {
-		const historyData = await getInventorySheetData('product history')
+		const spreadsheetId = await getSheetId(token)
 
-		return NextResponse.json({success: true, historyData})
-		
+		const paymentMethods = await getInventorySheetData('product history', spreadsheetId)
+
+		return NextResponse.json({ success: true, paymentMethods })
+
 	} catch (error) {
-		return NextResponse.json({success: false, error: error.message})
+		return NextResponse.json({ success: false, error: error.message })
 	}
 }

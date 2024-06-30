@@ -1,6 +1,8 @@
 "use client"
 import React, {useEffect, useState} from 'react'
 import {v4 as uuidv4} from 'uuid';
+import SearchableSelect from '../general/SearchableSelect';
+import SearchableSelectStr from '../general/SearchableSelectStr';
 
 const CarAndBattaryForm = ({ setCarData }) => {
     const [allCarsData, setAllCarsData] = useState([]);
@@ -14,6 +16,9 @@ const CarAndBattaryForm = ({ setCarData }) => {
 	// battary size
 	const [standardSize, setStandardSize] = useState("");
 	const [upgradeSize, setUpgradeSize] = useState("");
+
+    // close search windows
+    const [open, setOpen] = useState(false)
 
     // get cars and battaries info
     useEffect(() => {
@@ -94,24 +99,19 @@ const CarAndBattaryForm = ({ setCarData }) => {
 
     return (
         <form
-            className='w-full border-t-2 mt-10 pt-10 flex flex-col gap-5 border-gray-100'>
-							{/* brand */}
+            className='w-full border-t-2 mt-10 pt-10 flex flex-col gap-5 border-gray-100'
+            onClick={e => setOpen(!open)}>
+			{/* brand */}
             <div className='formRow'>
                 <label className='w-1/3' htmlFor="CarBrand">Car Brand</label>
-                <select
-                    name="CarBrand"
-                    id="CarBrand"
-                    className='select'
-                    value={currentBrand}
-                    onChange={e => setCurrentBrand(e.target.value)}>
-                    {carBrandsOptions}
-                </select>
+                <SearchableSelectStr  orgignalList={carBrands} currentItem={currentBrand} setCurrentItem={setCurrentBrand} open={open} />
                 <div className='w-1/3'></div>
             </div>
 						{/* model */}
             <div className='formRow'>
                 <label className='w-1/3' htmlFor="carModel">Car Model</label>
-                <select
+                <SearchableSelect orgignalList={currentBrandModels} currentItem={currentModel} setCurrentItem={setCurrentModel} open={open} /> 
+                {/* <select
                     name="CarModel"
                     id="CarModel"
                     className='select'
@@ -122,7 +122,7 @@ const CarAndBattaryForm = ({ setCarData }) => {
 											setUpgradeSize(modelArray[5])
 											return setCurrentModel(e.target.value)}}>
                     {currentModelsOptions}
-                </select>
+                </select> */}
                 <div className='w-1/3'></div>
             </div>
 						{/* year */}
@@ -132,14 +132,15 @@ const CarAndBattaryForm = ({ setCarData }) => {
                     border: "none"
                 }}>
                 <label className='w-1/3' htmlFor="year">Model Year</label>
-                <select
+                <SearchableSelectStr orgignalList={modelYears} currentItem={currentYear} setcurrentYear={setCurrentBrand} open={open} />
+                {/* <select
                     name="year"
                     id="year"
                     className='select'
                     value={currentYear}
                     onChange={e => setcurrentYear(e.target.value)}>
 										{yearsOptions}
-                </select>
+                </select> */}
                 <div className='w-1/3'></div>
             </div>
         </form>

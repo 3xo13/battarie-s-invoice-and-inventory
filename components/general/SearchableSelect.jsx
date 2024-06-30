@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react'
 import {searchArrays} from '@/javascript/searchArray';
 import { v4 as uuidv4 } from 'uuid';
 
-const SearchableSelect = ({orgignalList, currentProduct, setCurrentProduct}) => {
+const SearchableSelect = ({orgignalList, currentItem, setCurrentItem, open}) => {
     const [openList, setOpenList] = useState(false);
     const [currentList, setcurrentList] = useState(orgignalList);
     const [searchInput, setSearchInput] = useState("");
@@ -23,11 +23,15 @@ const SearchableSelect = ({orgignalList, currentProduct, setCurrentProduct}) => 
         }
     }, [searchInput])
 
+    useEffect(() => {
+            setOpenList(false)
+    }, [open])
+
     const productOptions = currentList.length
         ? currentList.map(
             prod => <p
                 key={uuidv4()}
-                onClick={e => setCurrentProduct(prod)}
+                onClick={e => setCurrentItem(prod)}
                 className='cursor-pointer border-b-2'>{`${prod[1]} | ${prod[0]}`}</p>
         )
         : []
@@ -35,8 +39,11 @@ const SearchableSelect = ({orgignalList, currentProduct, setCurrentProduct}) => 
     return (
         <div
             className='select relative group bg-red-100 cursor-pointer'
-            onClick={e => setOpenList(!openList)}>
-            {currentProduct[0]}
+            onClick={e => {
+                e.stopPropagation()
+                return setOpenList(!openList)
+            }}>
+            {currentItem[0]}
             <div
                 className={`flex-col w-full top-0 left-0 ${openList
                     ? "flex"
@@ -45,7 +52,7 @@ const SearchableSelect = ({orgignalList, currentProduct, setCurrentProduct}) => 
                     type="text"
                     className='w-full p-2'
                     autoFocus={true}
-										onChange={e => setSearchInput(e.target.value)}
+					onChange={e => setSearchInput(e.target.value)}
                     onClick={e => e.stopPropagation()}/> {productOptions}
             </div>
         </div>

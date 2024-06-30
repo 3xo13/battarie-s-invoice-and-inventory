@@ -9,14 +9,19 @@ export async function POST(request){
 	try {
 		
 		const data = await getSheetData();
+		// const passwords = data.slice(1).map(row => row[0])
+		const dataRows = data.slice(1)
 		let passwordDoesMatch = false;
-		for (const row of data) {
+		let user = [];
+		for (const row of dataRows) {
 			if (row[0] === password) {
-				passwordDoesMatch = true
+				passwordDoesMatch = true;
+				user = row
 			}
 		}
+		// console.log("🚀 ~ POST ~ user:", user)
 		if (passwordDoesMatch) {
-			const token = jwt.sign({ password }, process.env.JWT_SECRET, {
+			const token = jwt.sign({ password, user }, process.env.JWT_SECRET, {
 				expiresIn: '7d',
 			});
 
@@ -24,9 +29,13 @@ export async function POST(request){
 				httpOnly: true,
 				secure: process.env.NODE_ENV !== 'development',
 				sameSite: 'strict',
-				maxAge: '3d',
+				maxAge: '7d',
 				path: '/',
 			})
+			// const passVal = cookies().get('password')
+			// console.log("🚀 ~ POST ~ passVal:", passVal)
+			// const userVal = cookies().get('user')
+			// console.log("🚀 ~ POST ~ userVal:", userVal)
 	
 			return NextResponse.json({success: true})
 			
@@ -37,4 +46,5 @@ export async function POST(request){
 	} catch (error) {
 		return NextResponse.json({success: false, fetching_error: error.message})
 	}
+		
 }

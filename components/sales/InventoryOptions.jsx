@@ -140,7 +140,7 @@ export const InventoryOptions = ({products, bonus}) => {
             </div>
             {/* battary buy */}
             <div className='flex flex-col gap-3 border-t pt-3'>
-                <SearchableSelect orgignalList={products} currentProduct={currentProduct} setCurrentProduct={setCurrentProduct}/>
+                <SearchableSelect orgignalList={products} currentItem={currentProduct} setCurrentItem={setCurrentProduct}/>
                 {/* <select
                     name="battaryName"
                     id="battaryName"

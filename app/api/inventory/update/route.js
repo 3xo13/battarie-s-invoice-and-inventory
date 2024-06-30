@@ -1,20 +1,26 @@
-import { getInventorySheetData } from "@/app/_lip/readInventorySheet";
+import { cookies } from "next/headers";
 import { auth } from "@/app/_lip/sheetsapi/auth";
 import { NextResponse } from "next/server";
 import { sheets } from "@/app/_lip/sheetsapi/sheets";
+import getSheetId from "@/app/_lip/getSheetId";
 
 export async function POST(req) {
+	const cookieStore = cookies();
+
 	const request = await req.json()
 	const { cell, updateValue, oldValue } = request
-	// console.log("🚀 ~ POST ~ cell, updateValue:", cell, updateValue)
+
 	const range = `product!${cell}`
 	try {
+		const token = cookieStore.get('accessToken')
+		const spreadsheetId = await getSheetId(token)
 		const cellValue = +updateValue + +oldValue ;
-		console.log("🚀 ~ POST ~ cellValue:", cellValue)
-		// Update a cell value
+		if(!spreadsheetId){
+			throw new Error("unable to access user data")
+		}
 
 		const requestParams = {
-			spreadsheetId: process.env.INVENTORY_GOOGLE_SHEET_ID,
+			spreadsheetId,
 			range, // Specify the cell you want to update
 			valueInputOption: 'RAW', // Use 'RAW' for plain text values
 			resource: {
