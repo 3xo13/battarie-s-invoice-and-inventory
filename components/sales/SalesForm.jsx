@@ -22,6 +22,7 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 	const [fee, setFee] = useState(60)
 	const [mixPayment, setMixPayment] = useState(0)
 	const [mainPaymentMethod, setMainPaymentMethod] = useState('')
+	console.log("🚀 ~ SalesForm ~ mainPaymentMethod:", mainPaymentMethod)
 	const [MixPaymentMethod, setMixPaymentMethod] = useState('')
 	const [customerType, setCustomerType] = useState('personal')
 
@@ -68,8 +69,8 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 				const filteredPaymentOptions = paymentOptions.filter(item => item !== paymentOptions[0])
 				setPaymentMethods(paymentOptions)
 				setMixpaymentMethods(filteredPaymentOptions)
-				setMainPaymentMethod(paymentMethods[0])
-				setMixPaymentMethod(filteredPaymentOptions[0])
+				setMainPaymentMethod(...paymentOptions[0])
+				setMixPaymentMethod(...filteredPaymentOptions[0])
 			}
 		})()
 	}, [])
@@ -80,7 +81,7 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 		if (paymentMethods.length && mainPaymentMethod) {
 			const filteredPaymentOptions = paymentMethods.filter(item => item != mainPaymentMethod)
 			setMixpaymentMethods(filteredPaymentOptions)
-			setMixPaymentMethod(filteredPaymentOptions[0])
+			setMixPaymentMethod(...filteredPaymentOptions[0])
 		}
 	},[mainPaymentMethod])
 

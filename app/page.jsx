@@ -7,15 +7,18 @@ import {InventoryOptions} from '@/components/sales/InventoryOptions'
 import {useRouter} from 'next/navigation'
 import SaleConfirmationMsg from '@/components/sales/SaleConfirmationMsg'
 import Header from '@/components/header/Header'
+import InvoiceTemplate from '@/components/templates/InvoiceTemplte'
 
 const SalesPage = () => {
     const router = useRouter()
     const [products, setProducts] = useState([])
+    const [openPdfPage, setOpenPdfPage] = useState(false)
 
     // sales form confirmation message's display state
     const [confirmingSale, setConfirmingSale] = useState(false);
     // sale form data to be confirmed and set to the backend
     const [confirmingSaleData, setConfirmingSaleData] = useState();
+    console.log("🚀 ~ SalesPage ~ confirmingSaleData:", confirmingSaleData)
     // the transaction image to be sent with the form
     const [selectedImage, setSelectedImage] = useState(null);
 
@@ -57,6 +60,12 @@ const SalesPage = () => {
         }
     }
 
+    if (openPdfPage) {
+        return (
+            <InvoiceTemplate setOpenPage={setOpenPdfPage} saleData={confirmingSaleData}/>
+        )
+    }
+
     // render sale confermation message
     if (selectedImage && confirmingSale) {
         return (
@@ -75,6 +84,7 @@ const SalesPage = () => {
             className='min-w-screen min-h-screen flex flex-col items-center gap-10 px-32 py-10'>
             {/* sales form */}
             <Header title={"Sales Data & History"} link={"/inventory"} otherPageTitle={"Inventory"}/>
+            <button className="btn" onClick={e => setOpenPdfPage(true)}>openpdf</button>
             <SalesForm
                 products={products.slice(1)}
                 setConfirmingSale={setConfirmingSale}
