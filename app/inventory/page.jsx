@@ -2,13 +2,14 @@
 import React, {useEffect, useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {v4 as uuidv4} from 'uuid';
-import {letters} from '@/javascript/letters';
+import Loading from '@/components/general/Loading';
 import Header from '@/components/header/Header';
+import SearchableSelect from '@/components/general/SearchableSelect';
 
 const InventoryPage = () => {
     const router = useRouter()
-	//const [updateSwitch, setupdateSwitch] = useState([]);
-    const [sheetHeaders, setSheetHeaders] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     const [products, setProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState([]);
     const [currentProductName, setCurrentProductName] = useState("");
@@ -21,18 +22,21 @@ const InventoryPage = () => {
 		// validate session token
     useEffect(() => {
         (async () => {
+            setLoading(true)
             const response = await fetch('/api/auth/validate');
             const cookieValidationResult = await response.json()
             if (!cookieValidationResult.success) {
-                console.log(cookieValidationResult.validation_error);
+                setLoading(false)
                 router.push('/login')
             }
+            setLoading(false)
         })()
     }, [])
 
     // fetch inventory data and set the state
     useEffect(() => {
         (async () => {
+            setLoading(true)
             const response = await fetch("/api/inventory/get")
             const data = await response.json()
             // check if the data sheet is not empty (first value are the table headers)
@@ -41,11 +45,9 @@ const InventoryPage = () => {
                 setCurrentProduct(data.inventoryData[1])
                 setCurrentProductName(data.inventoryData[1][0])
                 setCurrentProductIndex(1)
-                setSheetHeaders(data.inventoryData[0])
                 setCellRow(2)
-                return
             }
-            console.log("🚀 ~ error accured while fetching inventory data")
+            setLoading(false)
         })()
     }, [])
 
@@ -71,6 +73,7 @@ const InventoryPage = () => {
             return;
         }
         try {
+            setLoading(true)
             const response = await fetch("/api/inventory/update", {
                 method: "POST",
                 body: JSON.stringify(
@@ -78,18 +81,19 @@ const InventoryPage = () => {
                 )
             })
             const updateResult = await response.json()
-            console.log("🚀 ~ handleSubmit ~ updateResult:", updateResult)
-						if (updateResult.success) {
-							updatePage()
-						}
+			if (updateResult.success) {
+				updatePage()
+			}
+            setLoading(false)
         } catch (error) {
             console.log("🚀 ~ handleSubmit ~ error:", error)
-
+            setLoading(false)
         }
     }
 
 		// refetch the inventory data after an update
 		const updatePage = async () => {
+            setLoading(true)
 			setQuntity(0)
             const response = await fetch("/api/inventory/get", { cache: 'no-store' })
 			const data = await response.json()
@@ -99,51 +103,48 @@ const InventoryPage = () => {
 				setCurrentProduct(data.inventoryData[currentProductIndex + 1])
                 setCurrentProductName(data.inventoryData[currentProductIndex + 1][0])
 				setCellRow(currentProductIndex + 2)
+                setLoading(false)
 				return
 			}
+            setLoading(false)
 		}
 
-    // create options list from the products data (product name)
-    const productOptions = products.length
-        ? products.map(
-            (prod, index) => <option
-                key={uuidv4()}
-                value={prod[0]}
-                >{prod[0]}</option>
-        )
-        : []
+        if (loading) {
+            return (
+                <div className='w-screen h-screen'>
+                    <Loading />
+                </div>
+            )
+        }
+
+        const copy = async (text) => {
+            await navigator.clipboard.writeText(text)
+            alert("copied to clipoard")
+        }
 
     return (
         <div
-            className='min-w-screen min-h-screen flex flex-col items-center gap-10 px-32 py-10'>
+            className='min-w-screen min-h-screen flex flex-col items-center gap-10 lg:px-32 pb-10'>
             <Header title={"Inventory"} link={"/"} otherPageTitle={"Sales Data & History"}/>
             {/* update form */}
             <div className='w-full border rounded-sm p-5'>
                 <form className='w-full flex flex-col gap-3'>
                     {/* product name (select product)*/}
-                    <div className='w-full flex flex-row justify-between'>
+                    <div className='inputWrapper'>
                         <label htmlFor="" className='w-1/2'>product name</label>
-                        <select name="product" id="product" className='w-1/2'
-                        value={currentProductName}
-                            onChange={e => {
-                                setCurrentProductName(e.target.value)
-                            }}>
-                                
-                                
-                            {productOptions}
-                        </select>
+                        <SearchableSelect orgignalList={products} currentItem={currentProduct} setCurrentItem={setCurrentProduct} open={open}/>
                     </div>
                     {/* inventory quantity */}
-                    <div className='w-full flex flex-row justify-between'>
+                    <div className='inputWrapper'>
                         <label htmlFor="" className='w-1/2'>Avaliable Qty</label>
-                        <p className="w-1/2">{existInInventory}</p>
+                        <p className="select">{existInInventory}</p>
                     </div>
                     {/* new quantity */}
-                    <div className='w-full flex flex-row justify-between'>
+                    <div className='inputWrapper'>
                         <label htmlFor="" className='w-1/2'>Quntity</label>
                         <input
                             type="number"
-                            className='w-1/2'
+                            className='select'
                             value={quntity}
                             onChange={e => setQuntity(e.target.value)}
                             min={0}/>
@@ -155,16 +156,16 @@ const InventoryPage = () => {
                 </form>
             </div>
             {/* payment data */}
-            <div className='w-full border rounded-sm p-5'>
-                <div className='w-full flex flex-row justify-between'>
-                    <h3>account number:</h3>
-                    <p>account number value</p>
-                    <button className="btn">copy</button>
+            <div className='w-full border rounded-sm p-5 flex flex-col gap-5'>
+                <div className='inputWrapper justify-between'>
+                    {/* <h3 className='header'>Account IBAN:</h3> */}
+                    <p className='select'>SA9780000503608010130104</p>
+                    <button className="btn" onClick={e => copy("SA9780000503608010130104")}>Copy</button>
                 </div>
-                <div className='w-full flex flex-row justify-between'>
-                    <h3>account number:</h3>
-                    <p>account number value</p>
-                    <button className="btn">copy</button>
+                <div className='inputWrapper justify-between'>
+                    {/* <h3 className='header'>Account number:</h3> */}
+                    <p className='select'>503608010130104</p>
+                    <button className="btn" onClick={e => copy("503608010130104")}>Copy</button>
                 </div>
             </div>
             {/* main website link */}

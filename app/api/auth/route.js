@@ -7,7 +7,7 @@ export async function POST(request){
 	const req = await request.json()
 	const password = await req.password
 	try {
-		
+		cookies().delete('accessToken');
 		const data = await getSheetData();
 		// const passwords = data.slice(1).map(row => row[0])
 		const dataRows = data.slice(1)

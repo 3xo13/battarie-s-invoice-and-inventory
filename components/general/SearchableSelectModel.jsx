@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { searchArrays } from '@/javascript/searchArray';
 import { v4 as uuidv4 } from 'uuid';
 
-const SearchableSelectStr = ({ orgignalList, currentItem, setCurrentItem, open }) => {
+const SearchableSelectModel = ({ orgignalList, currentItem, setCurrentItem, open }) => {
 	const [openList, setOpenList] = useState(false);
 	const [currentList, setcurrentList] = useState(orgignalList);
 	const [searchInput, setSearchInput] = useState("");
@@ -24,26 +24,26 @@ const SearchableSelectStr = ({ orgignalList, currentItem, setCurrentItem, open }
 	}, [searchInput])
 
 	useEffect(() => {
-			setOpenList(false)
-	},[open])
+		setOpenList(false)
+	}, [open])
 
 	const productOptions = currentList.length
 		? currentList.map(
 			item => <p
 				key={uuidv4()}
 				onClick={e => setCurrentItem(item)}
-				className='cursor-pointer border-b-2'>{item}</p>
+				className='cursor-pointer border-b-2'>{item[1]}</p>
 		)
 		: []
 
 	return (
 		<div
-			className='select relative group bg-red-100 cursor-pointer'
+			className='select relative group bg-red-100 cursor-pointer z-20'
 			onClick={e => {
 				e.stopPropagation()
 				return setOpenList(!openList)
-				}}>
-			{currentItem}
+			}}>
+			{currentItem[1]}
 			<div
 				className={`flex-col w-full top-0 left-0 ${openList
 					? "flex"
@@ -59,4 +59,4 @@ const SearchableSelectStr = ({ orgignalList, currentItem, setCurrentItem, open }
 	)
 }
 
-export default SearchableSelectStr
+export default SearchableSelectModel

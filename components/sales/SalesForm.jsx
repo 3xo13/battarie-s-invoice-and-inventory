@@ -7,6 +7,7 @@ import { getFormatedDate } from '@/javascript/getFormatedDate';
 import SearchableSelect from '../general/SearchableSelect';
 // import GetStrOptions from '../general/SelectStr';
 import SelectStr from '../general/SelectStr';
+import Loading from '../general/Loading';
 
 const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSelectedImage, selectedImage }) => {
 	const [currentProduct, setCurrentProduct] = useState([])
@@ -41,7 +42,8 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 
 	// other states
 	const [errMsg, setErrMsg] = useState("");
-	const [open, setOpen] = useState(false)
+	const [open, setOpen] = useState(false);
+	const [loading, setLoading] = useState(false);
 
 	// set current product when the products data is recived
 	useEffect(() => {
@@ -87,6 +89,7 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 	},[mainPaymentMethod])
 
 	const handleImageChange = (e) => {
+		e.preventDefault()
 		const file = e.target.files[0];
 		setSelectedImage(file);
 	};
@@ -130,6 +133,12 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 		setConfirmingSale(true)
 	}
 
+	if (loading) {
+		return (
+			<Loading />
+		)
+	}
+
 	return (
 		<div className='w-full flex flex-col items-center justify-center' onClick={e => setOpen(!open)}>
 			<div className='w-full border-2 border-gray-300 rounded-sm p-5 flex flex-col gap-5'>
@@ -147,7 +156,7 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 			</div>
 			{/* product price and cost (product price select) */}
 			<div className='formRow'>
-				<label className='w-1/3' htmlFor="price">{`Price (${price})`}</label>
+						<label className='w-1/3' htmlFor="price">{`Price (${productPrice})`}</label>
 				<input 
 				className='textInput' 
 				type="number" 
@@ -178,7 +187,7 @@ const SalesForm = ({ products, setConfirmingSale, setConfirmingSaleData, setSele
 			{/* image */}
 				<div className='formRow'>
 					<label htmlFor="image" className='w-1/3'>Upload an Image</label>
-						<input type="file" onChange={handleImageChange} className='textInput' accept="image/png, image/gif, image/jpeg" required={true}/>
+						<input type="file" onChange={e => handleImageChange(e)} className='textInput' accept="image/png, image/gif, image/jpeg" required={true}/>
 				</div>
 			{/* customer type (personal or company) */}
 					<div className='formRow' style={{ border: customerType === "personal" ? "none" : "" }}>

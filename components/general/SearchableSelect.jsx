@@ -29,10 +29,10 @@ const SearchableSelect = ({orgignalList, currentItem, setCurrentItem, open}) => 
 
     const productOptions = currentList.length
         ? currentList.map(
-            prod => <p
+            item => <p
                 key={uuidv4()}
-                onClick={e => setCurrentItem(prod)}
-                className='cursor-pointer border-b-2'>{`${prod[1]} | ${prod[0]}`}</p>
+                onClick={e => setCurrentItem(item)}
+                className='cursor-pointer border-b-2'>{`${item[1]} | ${item[0]}`}</p>
         )
         : []
 
@@ -43,14 +43,14 @@ const SearchableSelect = ({orgignalList, currentItem, setCurrentItem, open}) => 
                 e.stopPropagation()
                 return setOpenList(!openList)
             }}>
-            {currentItem[0]}
+            {`${currentItem[1]} | ${currentItem[0]}`}
             <div
                 className={`flex-col w-full top-0 left-0 ${openList
                     ? "flex"
                     : "hidden"} absolute bg-slate-50 px-3`}>
                 <input
                     type="text"
-                    className='w-full p-2'
+                    className='searchInput'
                     autoFocus={true}
 					onChange={e => setSearchInput(e.target.value)}
                     onClick={e => e.stopPropagation()}/> {productOptions}
