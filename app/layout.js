@@ -6,24 +6,24 @@ import Head from "next/head";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: 'PWA App',
-  description: 'Best PWA App in the world',
-  applicationName: 'PWA App',
+  title: 'Battary Swap Inventory',
+  description: 'Battary Swap Inventory & Sales Managment',
+  applicationName: 'Swap Inventory',
   appleMobileWebAppCapable: 'yes',
   appleMobileWebAppStatusBarStyle: 'default',
-  appleMobileWebAppTitle: 'PWA App',
+  appleMobileWebAppTitle: 'Swap Inventory',
   formatDetection: {
     telephone: 'no'
   },
   mobileWebAppCapable: 'yes',
   msapplication: {
-    config: '/icons/browserconfig.xml',
+    config: '/img/icons/favs/site.webmanifest',
     tileColor: '#2B5797',
     tapHighlight: 'no',
   },
   icons: {
     icon: [
-      { url: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/img/icons/favs/favicon.ico', sizes: '32x32', type: 'image/png' },
       { url: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
     ],
     apple: [
@@ -38,22 +38,22 @@ export const metadata = {
       { rel: 'shortcut icon', url: '/favicon.ico' },
     ],
   },
-  twitter: {
-    card: 'summary',
-    url: 'https://yourdomain.com',
-    title: 'PWA App',
-    description: 'Best PWA App in the world',
-    image: 'https://yourdomain.com/icons/android-chrome-192x192.png',
-    creator: '@DavidWShadow',
-  },
-  openGraph: {
-    type: 'website',
-    url: 'https://yourdomain.com',
-    title: 'PWA App',
-    description: 'Best PWA App in the world',
-    siteName: 'PWA App',
-    image: 'https://yourdomain.com/icons/apple-touch-icon.png',
-  },
+  // twitter: {
+  //   card: 'summary',
+  //   url: 'https://yourdomain.com',
+  //   title: 'PWA App',
+  //   description: 'Best PWA App in the world',
+  //   image: 'https://yourdomain.com/icons/android-chrome-192x192.png',
+  //   creator: '@DavidWShadow',
+  // },
+  // openGraph: {
+  //   type: 'website',
+  //   url: 'https://yourdomain.com',
+  //   title: 'PWA App',
+  //   description: 'Best PWA App in the world',
+  //   siteName: 'PWA App',
+  //   image: 'https://yourdomain.com/icons/apple-touch-icon.png',
+  // },
 };
 
 export const viewport = {
