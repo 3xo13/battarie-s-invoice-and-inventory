@@ -9,6 +9,7 @@ import SearchableSelect from '@/components/general/SearchableSelect';
 const InventoryPage = () => {
     const router = useRouter()
     const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const [products, setProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState([]);
@@ -124,7 +125,8 @@ const InventoryPage = () => {
 
     return (
         <div
-            className='min-w-screen min-h-screen flex flex-col items-center gap-10 lg:px-32 pb-10'>
+            className='min-w-screen min-h-screen flex flex-col items-center gap-10 lg:px-32 pb-10'
+            onClick={e => setOpen(false)}>
             <Header title={"Inventory"} link={"/"} otherPageTitle={"Sales Data & History"}/>
             {/* update form */}
             <div className='w-full border rounded-sm p-5'>
